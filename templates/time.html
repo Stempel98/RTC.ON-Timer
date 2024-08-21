@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Display</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .circle {
+            width: 90vmin;
+            height: 90vmin;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 28vmin;  /* Maximized font size */
+            font-weight: bold;
+            text-align: center;
+            position: relative;
+        }
+        .circle .inner-circle {
+            width: 85%;
+            height: 85%;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+        .circle .progress-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+            z-index: 1;
+        }
+        .circle .progress-ring circle {
+            fill: transparent;
+            stroke: white;
+            stroke-width: 80;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+        }
+        .warning {
+            background-color: red !important;
+            animation: blink 1s step-start 0s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="circle" id="timer">
+        <svg class="progress-ring" width="100%" height="100%">
+            <circle cx="50%" cy="50%" r="45%" />
+        </svg>
+        <div class="inner-circle">
+            <p id="time">{{ '%02d:%02d' % (time_remaining // 60, time_remaining % 60) }}</p>
+        </div>
+    </div>
+
+    <script>
+        let timeRemaining = {{ time_remaining }};
+        const totalTime = timeRemaining;
+        let paused = {{ 'true' if paused else 'false' }};
+        const timeElement = document.getElementById('time');
+        const circle = document.querySelector('.circle');
+        const progressCircle = document.querySelector('.progress-ring circle');
+
+        const radius = progressCircle.r.baseVal.value;
+        const circumference = 2 * Math.PI * radius;
+
+        progressCircle.style.strokeDasharray = `${circumference}`;
+        progressCircle.style.strokeDashoffset = `${circumference}`;
+
+        function setProgress(percent) {
+            const offset = circumference - (percent / 100) * circumference;
+            progressCircle.style.strokeDashoffset = offset;
+        }
+
+        function updateTimer() {
+            if (timeRemaining > 0 && !paused) {
+                timeRemaining--;
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                timeElement.innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                const percentage = (timeRemaining / totalTime) * 100;
+                setProgress(percentage);
+
+                if (percentage <= 10) {
+                    circle.classList.add('warning');
+                } else {
+                    circle.classList.remove('warning');
+                }
+            }
+        }
+
+        function checkStatus() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    const newTimeRemaining = data.time_remaining;
+                    const newPaused = data.paused;
+
+                    if (timeRemaining !== newTimeRemaining || paused !== newPaused) {
+                        timeRemaining = newTimeRemaining;
+                        paused = newPaused;
+                        location.reload();  // Reload page if there's any change
+                    }
+                });
+        }
+
+        setInterval(updateTimer, 1000);
+        setInterval(checkStatus, 2000);  // Check status every 2 seconds
+    </script>
+</body>
+</html>

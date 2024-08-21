@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Timer</title>
+</head>
+<body>
+    <h1>Manage Timer</h1>
+    <form method="POST">
+        Time in seconds: <input type="text" name="time" value="{{ set_time if set_time else '' }}"><br>
+        <button type="submit" name="action" value="Set">Set</button>
+        <button type="submit" name="action" value="Start">Start</button>
+        <button type="submit" name="action" value="Reset">Reset</button>
+    </form>
+
+    <h2>Preview Timer</h2>
+    <iframe src="/time" width="400" height="400"></iframe>
+</body>
+</html>
