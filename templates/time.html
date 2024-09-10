@@ -12,17 +12,17 @@
             height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            background-color: #181926;
         }
         .circle {
             width: 90vmin;
             height: 90vmin;
             border-radius: 50%;
-            background-color: #4CAF50;
+            /* background-color: #d20f39; */
             display: flex;
             justify-content: center;
             align-items: center;
-            color: white;
+            /* color: green; */
             font-size: 28vmin;  /* Maximized font size */
             font-weight: bold;
             text-align: center;
@@ -32,7 +32,7 @@
             width: 85%;
             height: 85%;
             border-radius: 50%;
-            background-color: #4CAF50;
+            background-color: #181926;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -49,15 +49,18 @@
         }
         .circle .progress-ring circle {
             fill: transparent;
-            stroke: white;
+            stroke: #363a4f;
             stroke-width: 80;
             stroke-dasharray: 283;
             stroke-dashoffset: 0;
             transition: stroke-dashoffset 1s linear;
         }
+        #time {
+            color: #d20f39;
+        }
         .warning {
-            background-color: red !important;
-            animation: blink 1s step-start 0s infinite;
+            background-color: #d20f39 !important;
+            /* animation: blink 1s step-start 0s infinite; */
         }
         @keyframes blink {
             50% { opacity: 0.5; }
